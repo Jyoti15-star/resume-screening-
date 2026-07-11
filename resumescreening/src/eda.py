@@ -1,82 +1,78 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
-# Load the dataset
+# Load Dataset
 df = pd.read_csv("resumescreening/data/resume_data.csv")
 
+# Remove BOM and extra spaces
+df.columns = df.columns.str.replace("\ufeff", "", regex=False)
+df.columns = df.columns.str.strip()
 
-# 1. Display first 5 rows
-# Purpose: Dataset ka starting data dekhne ke liye
-
-print("FIRST 5 ROWS")
-print(df.head())
-
-
-# 2. Display last 5 rows
-# Purpose: Dataset ka ending data dekhne ke liye
-
-print("\nLAST 5 ROWS")
-print(df.tail())
-
-
-# 3. Display shape
-# Purpose: Total rows aur columns dekhne ke liye
-
-print("\nSHAPE OF DATASET")
-print(df.shape)
-
-
-# 4. Display column names
-# Purpose: Dataset me kaun-kaun se columns hain
-
-print("\nCOLUMN NAMES")
+# 1. Dataset Overview
+print("Shape:", df.shape)
+print("\nColumns:")
 print(df.columns)
 
+print("\nInfo:")
+df.info()
 
-# 5. Dataset information
-# Purpose: Data types, non-null values aur memory usage
+print("\nFirst 5 Rows:")
+print(df.head())
 
-print("\nDATASET INFO")
-print(df.info())
+print("\nStatistical Summary:")
+print(df.describe())
 
-
-# 6. Check missing values
-# Purpose: Kis column me kitna missing data hai
-
-print("\nMISSING VALUES")
+# 2. Missing Values
+print("\nMissing Values:")
 print(df.isnull().sum())
 
+plt.figure(figsize=(12,5))
+df.isnull().sum().plot(kind="bar")
+plt.title("Missing Values")
+plt.xticks(rotation=90)
+plt.show()
 
-# 7. Check duplicate rows
-# Purpose: Duplicate resumes hain ya nahi
-
-print("\nDUPLICATE ROWS")
+# 3. Duplicate Values
+print("\nDuplicate Rows:")
 print(df.duplicated().sum())
 
+# 4. Target Variable Analysis
+print("\nJob Position Count:")
+print(df["job_position_name"].value_counts())
 
-# 8. Statistical summary (Text Columns)
-# Purpose: Object (text) columns ki summary
+plt.figure(figsize=(12,5))
+df["job_position_name"].value_counts().head(10).plot(kind="bar")
+plt.title("Top 10 Job Roles")
+plt.xticks(rotation=45)
+plt.show()
 
-print("\nTEXT COLUMN SUMMARY")
-print(df.describe(include="object"))
+# 5. Matched Score Analysis
+print("\nMatched Score Summary:")
+print(df["matched_score"].describe())
 
+plt.figure(figsize=(6,4))
+plt.hist(df["matched_score"], bins=20)
+plt.title("Matched Score Distribution")
+plt.show()
 
-# 9. Unique Categories
-# Purpose: Kitni different job categories hain
+plt.figure(figsize=(5,4))
+plt.boxplot(df["matched_score"].dropna())
+plt.title("Matched Score Boxplot")
+plt.show()
 
-print("\nUNIQUE CATEGORIES")
-print(df["Category"].unique())
+# 6. Unique Job Roles
+print("\nUnique Job Roles:")
+print(df["job_position_name"].nunique())
 
+# 7. Correlation
+print("\nCorrelation:")
+print(df.corr(numeric_only=True))
 
-# 10. Count of each Category
-# Purpose: Har category me kitne resumes hain
+# 8. Skewness
+print("\nSkewness:")
+print(df.skew(numeric_only=True))
 
-print("\nCATEGORY COUNT")
-print(df["Category"].value_counts())
-
-
-# 11. Display one sample resume
-# Purpose: Resume ka actual format dekhna
-
-print("\nSAMPLE RESUME")
-print(df["Resume"][0])
-
+# 9. Class Distribution
+print("\nClass Percentage:")
+print(df["job_position_name"].value_counts(normalize=True) * 100)
+print("EDA successful")
