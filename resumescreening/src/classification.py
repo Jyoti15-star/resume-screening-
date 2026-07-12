@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 # Load dataset
 df = pd.read_csv("resumescreening/data/preprocessed_resume_data.csv")
@@ -10,6 +11,12 @@ df.fillna("", inplace=True)
 # Features and Target
 X = df["resume_text"]
 y = df["job_position_name"]
+
+
+# Label Encoding
+label_encoder = LabelEncoder()
+y = label_encoder.fit_transform(y)
+
 
 # TF-IDF
 tfidf = TfidfVectorizer(stop_words="english")
