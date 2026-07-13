@@ -2,77 +2,92 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load Dataset
-df = pd.read_csv("resumescreening/data/resume_data.csv")
+df = pd.read_csv("resumescreening/data/train.csv")
 
-# Remove BOM and extra spaces
-df.columns = df.columns.str.replace("\ufeff", "", regex=False)
-df.columns = df.columns.str.strip()
+# ---------------------------
+# Basic Information
+# ---------------------------
 
-# 1. Dataset Overview
-print("Shape:", df.shape)
+print("Shape of Dataset:")
+print(df.shape)
+
 print("\nColumns:")
 print(df.columns)
 
-print("\nInfo:")
-df.info()
+print("\nData Types:")
+print(df.dtypes)
 
 print("\nFirst 5 Rows:")
 print(df.head())
 
-print("\nStatistical Summary:")
-print(df.describe())
+print("\nLast 5 Rows:")
+print(df.tail())
 
-# 2. Missing Values
+# ---------------------------
+# Missing Values
+# ---------------------------
+
 print("\nMissing Values:")
 print(df.isnull().sum())
 
-plt.figure(figsize=(12,5))
-df.isnull().sum().plot(kind="bar")
-plt.title("Missing Values")
-plt.xticks(rotation=90)
-plt.show()
+# ---------------------------
+# Duplicate Values
+# ---------------------------
 
-# 3. Duplicate Values
 print("\nDuplicate Rows:")
 print(df.duplicated().sum())
 
-# 4. Target Variable Analysis
-print("\nJob Position Count:")
-print(df["job_position_name"].value_counts())
+# ---------------------------
+# Category Distribution
+# ---------------------------
 
-plt.figure(figsize=(12,5))
-df["job_position_name"].value_counts().head(10).plot(kind="bar")
-plt.title("Top 10 Job Roles")
-plt.xticks(rotation=45)
+print("\nCategory Counts:")
+print(df["Category"].value_counts())
+
+# ---------------------------
+# Resume Length
+# ---------------------------
+
+df["Resume_Length"] = df["Text"].apply(len)
+
+print("\nResume Length Statistics:")
+print(df["Resume_Length"].describe())
+
+# ---------------------------
+# Sample Resume
+# ---------------------------
+
+print("\nSample Resume:")
+print(df["Text"].iloc[0])
+
+print("\nSample Category:")
+print(df["Category"].iloc[0])
+
+# ---------------------------
+# Category Distribution Graph
+# ---------------------------
+
+plt.figure(figsize=(12,6))
+df["Category"].value_counts().plot(kind="bar")
+
+plt.title("Resume Category Distribution")
+plt.xlabel("Job Role")
+plt.ylabel("Number of Resumes")
+
+plt.xticks(rotation=90)
+plt.tight_layout()
 plt.show()
 
-# 5. Matched Score Analysis
-print("\nMatched Score Summary:")
-print(df["matched_score"].describe())
+# ---------------------------
+# Resume Length Distribution
+# ---------------------------
 
-plt.figure(figsize=(6,4))
-plt.hist(df["matched_score"], bins=20)
-plt.title("Matched Score Distribution")
+plt.figure(figsize=(8,5))
+plt.hist(df["Resume_Length"], bins=30)
+
+plt.title("Resume Length Distribution")
+plt.xlabel("Resume Length")
+plt.ylabel("Frequency")
+
+plt.tight_layout()
 plt.show()
-
-plt.figure(figsize=(5,4))
-plt.boxplot(df["matched_score"].dropna())
-plt.title("Matched Score Boxplot")
-plt.show()
-
-# 6. Unique Job Roles
-print("\nUnique Job Roles:")
-print(df["job_position_name"].nunique())
-
-# 7. Correlation
-print("\nCorrelation:")
-print(df.corr(numeric_only=True))
-
-# 8. Skewness
-print("\nSkewness:")
-print(df.skew(numeric_only=True))
-
-# 9. Class Distribution
-print("\nClass Percentage:")
-print(df["job_position_name"].value_counts(normalize=True) * 100)
-print("EDA successful")
