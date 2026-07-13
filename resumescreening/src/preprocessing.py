@@ -62,7 +62,7 @@ def clean_resume(text):
     text = re.sub(r'\+?\d[\d\s()-]{8,}\d', ' ', text)
 
     # Remove Numbers
-    text = re.sub(r'\d+', ' ', text)
+    #text = re.sub(r'\d+', ' ', text)
 
     # Remove Special Characters
     text = re.sub(r'[^a-zA-Z\s]', ' ', text)
