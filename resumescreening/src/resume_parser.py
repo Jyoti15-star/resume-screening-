@@ -151,3 +151,7 @@ if __name__=="__main__":
     print("Skills :",extract_skills(resume))
     print("Education :",extract_education(resume))
     print("Experience :",extract_experience(resume))
+
+
+
+    

@@ -50,3 +50,5 @@ category = label_encoder.inverse_transform(prediction)
 print("\n==============================")
 print("Predicted Category :", category[0])
 print("==============================")
+
+
