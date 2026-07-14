@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Resume Screening System - Recruit Smarter</title>
+  <meta name="description" content="A premium AI-powered resume screening and candidate analysis platform for modern recruiters. Predict job roles, parse skills, and cut hiring times.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Home-specific Page Styles */
+    .hero-section {
+      position: relative;
+      padding: 10rem 0 6rem 0;
+      overflow: hidden;
+    }
+    
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #FFFFFF 20%, #94A3B8 60%, var(--color-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2.5rem;
+      max-width: 540px;
+    }
+    
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+    }
+
+    /* Hero Preview Card Styling */
+    .hero-preview-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-preview-wrapper::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+      top: -50px;
+      right: -50px;
+      z-index: -1;
+    }
+
+    .preview-card {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-lg), 0 0 40px rgba(59, 130, 246, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .candidate-info {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .avatar-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--color-accent), #60A5FA);
+      font-weight: 700;
+      color: #FFF;
+      font-size: 1.2rem;
+    }
+
+    .preview-score-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .score-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-success);
+    }
+
+    .score-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-body-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .preview-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 4rem 0;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--color-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-title {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Steps Section */
+    .steps-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .step-card {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      color: var(--color-accent);
+      font-weight: 700;
+      margin: 0 auto 1.5rem auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-card:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      top: 22px;
+      right: -1.5rem;
+      font-size: 1.5rem;
+      color: var(--border-color);
+    }
+
+    /* Benefits Section */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .benefit-item {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+
+    .benefit-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      background: var(--color-accent-glow);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      color: var(--color-accent);
+      border-radius: var(--radius-md);
+    }
+
+    .benefit-info h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* FAQ Section */
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .faq-trigger {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .faq-icon {
+      transition: var(--transition-normal);
+      color: var(--text-secondary);
+    }
+
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .faq-item.active .faq-content {
+      max-height: 200px;
+      padding-bottom: 1.5rem;
+      transition: max-height 0.3s cubic-bezier(1, 0, 1, 0);
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+      color: var(--color-accent);
+    }
+
+    /* Testimonials */
+    .testimonial-card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .testimonial-quote {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .testimonial-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .testimonial-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: bold;
+      color: var(--color-accent);
+      border: 1px solid var(--border-color);
+    }
+
+    .testimonial-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .testimonial-role {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .hero-section { padding-top: 8rem; }
+      .hero-title { font-size: 2.75rem; }
+      .steps-container { flex-direction: column; gap: 2.5rem; }
+      .step-card:not(:last-child)::after {
+        content: '↓';
+        top: auto;
+        bottom: -2rem;
+        right: 50%;
+        transform: translateX(50%);
+      }
+      .benefits-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Gradients -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-radial-gradient"></div>
+
+  <!-- NAVIGATION -->
+  <nav class="navbar" id="mainNavbar">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span>AegisScreen AI</span>
+      </a>
+      
+      <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="nav-link active">Home</a></li>
+        <li><a href="upload.html" class="nav-link">Upload Resume</a></li>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="login.html" class="nav-link">Login</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-secondary btn-sm">Sign In</a>
+        <a href="upload.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="container grid-cols-2">
+      <div class="hero-content animate-fade-in">
+        <h1 class="hero-title">AI Resume Screening System</h1>
+        <p class="hero-subtitle text-secondary">
+          Empower your recruitment team with instant candidate insights. Parse resumes, identify core competencies, gauge experience alignment, and let machine learning match top-tier talent with your open positions in seconds.
+        </p>
+        <div class="hero-btns">
+          <a href="upload.html" class="btn btn-primary">
+            Upload Resume
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </a>
+          <a href="#why-choose-us" class="btn btn-secondary">Learn More</a>
+        </div>
+      </div>
+      
+      <div class="hero-preview-wrapper animate-fade-in animate-delay-1">
+        <!-- Dashboard Preview Card -->
+        <div class="preview-card glass-card">
+          <div class="preview-header">
+            <div class="candidate-info">
+              <div class="avatar-placeholder flex-center" style="background: rgba(255, 255, 255, 0.05); color: var(--text-secondary);">--</div>
+              <div>
+                <h4 style="margin:0; font-size: 1rem;">No Resume Uploaded</h4>
+                <span class="badge badge-info" style="background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); border-color: var(--border-color);">Awaiting Analysis</span>
+              </div>
+            </div>
+            <div class="preview-score-badge">
+              <span class="score-value" style="color: var(--text-secondary);">0%</span>
+              <span class="score-label">ATS Score</span>
+            </div>
+          </div>
+          
+          <div class="preview-body-row">
+            <div class="preview-label">Predicted Match</div>
+            <div class="preview-value" style="color: var(--text-secondary);">Results will appear after AI analysis</div>
+          </div>
+
+          <div class="preview-body-row">
+            <div class="preview-label">Top Skills</div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.35rem;">
+              No skills extracted yet
+            </div>
+          </div>
+
+          <div class="preview-body-row" style="margin-bottom: 0;">
+            <div class="preview-label">Match Reliability</div>
+            <div class="progress-bar-container" style="margin-top: 0.5rem;">
+              <div class="progress-bar-fill" style="width: 0%"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-top:0.25rem; color:var(--text-secondary);">
+              <span>Confidence Rank</span>
+              <span>Waiting for upload</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <section class="stats-section">
+    <div class="container grid-cols-4">
+      <div class="stat-card">
+        <div class="stat-number">82.8%</div>
+        <div class="stat-title">Model Accuracy (Linear SVM)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">PDF, DOCX</div>
+        <div class="stat-title">Supported Resume Formats</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">12+</div>
+        <div class="stat-title">Supported Job Categories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">&lt; 3.0s</div>
+        <div class="stat-title">Resume Analysis Speed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE OUR PLATFORM -->
+  <section class="section" id="why-choose-us">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why Choose Our Platform</h2>
+        <p>AegisScreen combines advanced natural language processing and custom hiring algorithms to streamline recruiters' daily workflows.</p>
+      </div>
+
+      <div class="grid-cols-3">
+        <!-- Card 1 -->
+        <div class="glass-card">
+          <div style="margin-bottom:1.5rem; color:var(--color-accent);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">AI Powered Screening</h3>
+          <p style="font-size:0.9rem;">Automate initial screening with model-driven evaluation protocols trained on millions of success-pattern resumes.</p>
+        </div>
+        <!-- Card 2 -->
+        <div class="glass-card">
+          <div style="margin-bottom:1.5rem; color:var(--color-accent);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">Resume Parsing</h3>
+          <p style="font-size:0.9rem;">Ingest PDFs, Word files, and rich text documents instantly. Extract clean structured metadata without format boundaries.</p>
+        </div>
+        <!-- Card 3 -->
+        <div class="glass-card">
+          <div style="margin-bottom:1.5rem; color:var(--color-accent);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">Skill Extraction</h3>
+          <p style="font-size:0.9rem;">Identify explicit tech stacks and soft skills. Evaluate project contextual descriptions to classify skill proficiencies.</p>
+        </div>
+        <!-- Card 4 -->
+        <div class="glass-card">
+          <div style="margin-bottom:1.5rem; color:var(--color-accent);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">Fast Candidate Matching</h3>
+          <p style="font-size:0.9rem;">Filter candidates dynamically. Instantly match skill graphs against specific job templates to surface top applications.</p>
+        </div>
+        <!-- Card 5 -->
+        <div class="glass-card">
+          <div style="margin-bottom:1.5rem; color:var(--color-accent);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">ATS Score</h3>
+          <p style="font-size:0.9rem;">Gauge keyword optimization, formatting metrics, and candidate eligibility parameters via a unified scoring metric.</p>
+        </div>
+        <!-- Card 6 -->
+        <div class="glass-card">
+          <div style="margin-bottom:1.5rem; color:var(--color-accent);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">Candidate Ranking</h3>
+          <p style="font-size:0.9rem;">Compare candidate match percentiles across directories to review structured profiles relative to target indicators.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" style="background: var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
+    <div class="container">
+      <div class="section-header">
+        <h2>How It Works</h2>
+        <p>A step-by-step overview of how AegisScreen turns resumes into data-driven decisions.</p>
+      </div>
+
+      <div class="steps-container">
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-number flex-center">1</div>
+          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Upload Resume</h3>
+          <p style="font-size:0.875rem;">Drag and drop PDF or Word documents into the system.</p>
+        </div>
+        <!-- Step 2 -->
+        <div class="step-card">
+          <div class="step-number flex-center">2</div>
+          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">AI Analysis</h3>
+          <p style="font-size:0.875rem;">System parses sentences, text boxes, headers, and bullet points.</p>
+        </div>
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-number flex-center">3</div>
+          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Extract Skills</h3>
+          <p style="font-size:0.875rem;">Identifies hard skills, tools, methodologies, and education markers.</p>
+        </div>
+        <!-- Step 4 -->
+        <div class="step-card">
+          <div class="step-number flex-center">4</div>
+          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Predict Job Role</h3>
+          <p style="font-size:0.875rem;">Neural net predicts matching job titles and confidence metrics.</p>
+        </div>
+        <!-- Step 5 -->
+        <div class="step-card">
+          <div class="step-number flex-center">5</div>
+          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Recruiter Decision</h3>
+          <p style="font-size:0.875rem;">Review match cards, download summaries, and trigger next steps.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIRING BENEFITS -->
+  <section class="section">
+    <div class="container grid-cols-2">
+      <div class="flex-center">
+        <!-- Interactive Graphics Panel or Mock Image -->
+        <div style="background: rgba(30, 41, 59, 0.3); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; width:100%; position:relative;">
+          <h4 style="margin-bottom:1.5rem; font-size:1.1rem; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.05em;">Hiring Workflow Optimization</h4>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.85rem;">
+              <span>Manual Parsing Time</span>
+              <span style="color:var(--color-danger);">15-20 Mins / Resume</span>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 100%; background: var(--color-danger);"></div></div>
+          </div>
+
+          <div style="margin-bottom: 2rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.85rem;">
+              <span>AegisScreen AI Parsing</span>
+              <span style="color:var(--color-success); font-weight:700;">&lt; 3 Seconds</span>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 15%; background: var(--color-success);"></div></div>
+          </div>
+          
+          <div style="border-top:1px solid var(--border-color); padding-top:1.5rem; display:flex; justify-content:space-between; text-align:center;">
+            <div>
+              <div style="font-size:1.2rem; font-weight:800; color:var(--color-success);">Python</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Backend Base</div>
+            </div>
+            <div>
+              <div style="font-size:1.2rem; font-weight:800; color:var(--color-accent);">Flask</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Server Router</div>
+            </div>
+            <div>
+              <div style="font-size:1.2rem; font-weight:800; color:var(--color-warning);">NLP</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Parsing Engine</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display:flex; flex-direction:column; justify-content:center;">
+        <h2 style="margin-bottom: 1.5rem;">Transform Your Recruitment Metrics</h2>
+        <p style="margin-bottom: 2.5rem;">Manual resume sorting drains resources and introduces fatigue. Our platform standardizes profiles, ranks applications objectively, and highlights key alignment metrics to increase quality-of-hire.</p>
+        
+        <div class="benefits-grid">
+          <div class="benefit-item">
+            <div class="benefit-icon flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="benefit-info">
+              <h3>Save Hiring Time</h3>
+              <p style="font-size:0.875rem;">Shorten time-to-hire by automatically categorizing applicants by role compatibility.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <div class="benefit-icon flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="benefit-info">
+              <h3>Better Matching</h3>
+              <p style="font-size:0.875rem;">Surface candidates with strong core alignment to key roles, minimizing false positives.</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <div class="benefit-icon flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="benefit-info">
+              <h3>Reduce Manual Screening</h3>
+              <p style="font-size:0.875rem;">Free recruiters from sorting generic layouts and parsing inconsistencies manually.</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <div class="benefit-icon flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div class="benefit-info">
+              <h3>Improved Decisions</h3>
+              <p style="font-size:0.875rem;">Rely on unbiased parsing, extracted competence levels, and standardized timelines.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section" style="background: var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
+    <div class="container">
+      <div class="section-header">
+        <h2>What Users Say</h2>
+        <p>Testimonials will be available after deployment.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Frequently Asked Questions</h2>
+        <p>Got questions about parsing accuracy, security, or integrations? We've got answers.</p>
+      </div>
+
+      <div class="faq-container">
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>What document formats does AegisScreen support?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-content">
+            <p>Our resume screening engine supports standard recruitment documents including PDF, DOC, and DOCX. It is fully optimized to handle tables, columns, sidebars, and nested headers common in modern resume designs.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>How does the AI predict candidate job roles?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-content">
+            <p>AegisScreen uses custom NLP classification algorithms. The model looks at professional titles, experience metrics, tools listed, and descriptions of previous work to assign a predicted job role and matching confidence ranking.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Is our data secure and GDPR-compliant?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-content">
+            <p>Absolutely. Candidate resumes are processed securely. The parsed data is structured internally without storing unencrypted files long-term. We support custom retention policies to align with corporate compliance protocols.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Can this integrate with our current ATS software?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-content">
+            <p>Yes. The platform is designed modularly. The JSON schemas parsed by our algorithms are structured to integrate directly into popular ATS databases and backend systems such as Greenhouse, Workday, or a Flask custom backend.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span>AegisScreen AI</span>
+          </a>
+          <p>Next-generation talent parsing and role prediction for modern enterprise recruitment teams.</p>
+        </div>
+        
+        <div>
+          <h4 class="footer-title">Product</h4>
+          <ul class="footer-links">
+            <li><a href="upload.html">Resume Upload</a></li>
+            <li><a href="dashboard.html">Recruiter Dashboard</a></li>
+            <li><a href="#why-choose-us">Platform Features</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Company</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="about.html#team">Developer Team</a></li>
+            <li><a href="about.html#contact">Contact Support</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#">API Documentation</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AegisScreen AI Inc. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          </a>
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <div class="back-to-top" id="backToTop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

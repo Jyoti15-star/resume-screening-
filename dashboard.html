@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recruiter Dashboard - AegisScreen AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background-color: var(--bg-primary);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Dashboard Wrapper Layout */
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 100;
+      transition: var(--transition-normal);
+    }
+
+    .sidebar-brand {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .sidebar-item a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.25rem;
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: var(--transition-fast);
+    }
+
+    .sidebar-item a:hover, .sidebar-item.active a {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-item.active a {
+      color: var(--color-accent);
+      background: var(--color-accent-glow);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+
+    .sidebar-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .recruiter-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-accent), #60A5FA);
+      color: #FFF;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .recruiter-details {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.85rem;
+      overflow: hidden;
+    }
+
+    /* Main Dashboard Panel */
+    .dashboard-main {
+      flex: 1;
+      margin-left: 260px;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      transition: var(--transition-normal);
+    }
+
+    /* Top Header Bar */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .search-wrapper {
+      position: relative;
+      width: 320px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.5rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+
+    .search-input:focus {
+      border-color: var(--color-accent);
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .notification-btn {
+      position: relative;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.02);
+      transition: var(--transition-fast);
+    }
+
+    .notification-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 8px;
+      height: 8px;
+      background: var(--color-danger);
+      border-radius: 50%;
+    }
+
+    /* KPI metric widgets */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .kpi-card {
+      background: rgba(30, 41, 59, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-num {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-top: 0.25rem;
+    }
+
+    .kpi-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Split Section layout */
+    .split-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Candidate listing list */
+    .candidate-list-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .candidate-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .candidate-table-wrapper {
+      max-height: 520px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    .candidate-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    .candidate-table th {
+      background: rgba(17, 24, 39, 0.9);
+      padding: 0.85rem 1rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .candidate-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .candidate-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .candidate-table tr.selected-row td {
+      background: rgba(59, 130, 246, 0.08);
+      border-left: 3px solid var(--color-accent);
+      color: var(--text-primary);
+    }
+
+    .candidate-table tr:hover:not(.selected-row) td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Candidate detailed profiler cards */
+    .profile-details-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .profile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.25rem;
+    }
+
+    .profile-title-block {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .big-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--color-accent), #60A5FA);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+
+    .star-rating {
+      color: var(--color-warning);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+      display: flex;
+      gap: 2px;
+    }
+
+    .gauge-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-subcard {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .metric-score {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-success);
+    }
+
+    /* Actions bar */
+    .profile-actions-bar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Mobile Hamburger Overlay and Toggle */
+    .mobile-sidebar-toggle {
+      display: none;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 1200px) {
+      .split-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        left: -260px;
+      }
+      .sidebar.active {
+        left: 0;
+      }
+      .dashboard-main {
+        margin-left: 0;
+      }
+      .mobile-sidebar-toggle {
+        display: block;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+      .search-wrapper {
+        width: 100%;
+      }
+      .profile-actions-bar {
+        grid-template-columns: 1fr;
+    /* TABS STYLING & DETAILS */
+    .dashboard-tab-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      animation: fadeIn 0.4s var(--transition-normal) forwards;
+    }
+    
+    /* Candidates Tab Filters */
+    .candidates-filters-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .filter-select {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-select option {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+    
+    /* Analytics Tab Charts */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2rem;
+    }
+    
+    .chart-panel {
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .bar-chart-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 200px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .chart-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      gap: 0.5rem;
+    }
+    
+    .chart-bar {
+      width: 44px;
+      background: linear-gradient(0deg, var(--color-accent) 0%, #60A5FA 100%);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+    }
+    
+    .chart-bar:hover {
+      background: var(--color-accent-hover);
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.35);
+    }
+    
+    .chart-bar-tooltip {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+    
+    .chart-bar:hover .chart-bar-tooltip {
+      opacity: 1;
+    }
+    
+    /* Settings Configuration Controls */
+    .settings-section-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+    
+    .slider-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 250px;
+    }
+    
+    .range-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+    }
+    
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+      transition: var(--transition-fast);
+    }
+    
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    @media (max-width: 900px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Gradients -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-radial-gradient"></div>
+
+  <!-- DASHBOARD WRAPPER -->
+  <div class="dashboard-container">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="dashboardSidebar">
+      <div class="sidebar-brand">
+        <a href="index.html" class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span>AegisScreen AI</span>
+        </a>
+      </div>
+
+      <ul class="sidebar-menu" id="sidebarMenu">
+        <li class="sidebar-item active" data-tab="dashboard">
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+            Dashboard
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="upload.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Upload Resume
+          </a>
+        </li>
+        <li class="sidebar-item" data-tab="candidates">
+          <a href="#" id="candidatesMenuBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Candidates
+          </a>
+        </li>
+        <li class="sidebar-item" data-tab="analytics">
+          <a href="#" id="analyticsMenuBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Analytics
+          </a>
+        </li>
+        <li class="sidebar-item" data-tab="settings">
+          <a href="#" id="settingsMenuBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+          </a>
+        </li>
+        <li class="sidebar-item" style="margin-top: auto;">
+          <a href="index.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Logout
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="recruiter-avatar flex-center">MS</div>
+        <div class="recruiter-details">
+          <span style="font-weight: 700;" id="recruiterNameText">Mansi Sethi</span>
+          <span style="font-size:0.75rem; color:var(--text-secondary);">Enterprise Recruiter</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT PANEL -->
+    <main class="dashboard-main">
+      
+      <!-- Dashboard Top Navigation -->
+      <header class="dashboard-header">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-sidebar-toggle flex-center" id="mobileSidebarToggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <h2 style="font-size: 1.5rem; font-weight:800;">Pipeline Overview</h2>
+        </div>
+
+        <div class="header-actions">
+          <!-- Candidate Search Bar -->
+          <div class="search-wrapper">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="candidateSearchInput" placeholder="Search candidates or skills...">
+          </div>
+
+          <!-- Alerts Bell -->
+          <button class="notification-btn" id="notificationBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notification-badge"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD TAB PANEL -->
+      <div id="tab-content-dashboard" class="dashboard-tab-panel">
+        
+        <!-- KPI METRICS GRID -->
+        <section class="kpi-grid">
+          <!-- Metric 1: Total -->
+          <div class="kpi-card">
+            <div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600; letter-spacing:0.05em;">Total Resumes</div>
+              <div class="kpi-num" id="totalResumesMetric">0</div>
+            </div>
+            <div class="kpi-icon-box flex-center" style="background: rgba(59, 130, 246, 0.1); color: var(--color-accent);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+          </div>
+
+          <!-- Metric 2: Shortlisted -->
+          <div class="kpi-card">
+            <div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600; letter-spacing:0.05em;">Shortlisted</div>
+              <div class="kpi-num" style="color:var(--color-success);" id="shortlistedResumesMetric">0</div>
+            </div>
+            <div class="kpi-icon-box flex-center" style="background: var(--color-success-glow); color: var(--color-success);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+          </div>
+
+          <!-- Metric 3: Rejected -->
+          <div class="kpi-card">
+            <div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600; letter-spacing:0.05em;">Rejected</div>
+              <div class="kpi-num" style="color:var(--color-danger);" id="rejectedResumesMetric">0</div>
+            </div>
+            <div class="kpi-icon-box flex-center" style="background: var(--color-danger-glow); color: var(--color-danger);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+          </div>
+
+          <!-- Metric 4: Avg ATS -->
+          <div class="kpi-card">
+            <div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600; letter-spacing:0.05em;">Average ATS Score</div>
+              <div class="kpi-num" style="color:var(--color-warning);" id="avgAtsMetric">0%</div>
+            </div>
+            <div class="kpi-icon-box flex-center" style="background: var(--color-warning-glow); color: var(--color-warning);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- SPLIT VIEW: CANDIDATES LIST & APPLICANT DETAILS -->
+        <div class="split-layout">
+          
+          <!-- Left Side: Table of Candidate Lists -->
+          <div class="glass-card candidate-list-card">
+            <div class="candidate-list-header">
+              <h3 style="font-size:1.1rem; font-weight:700;">Recent Applicants</h3>
+              <span class="badge badge-info" style="font-size:0.7rem;" id="candidateCountLabel">0 Total</span>
+            </div>
+
+            <div class="candidate-table-wrapper">
+              <table class="candidate-table" id="dashboardCandidatesTable">
+                <thead>
+                  <tr>
+                    <th>Candidate</th>
+                    <th>Predicted Role</th>
+                    <th>ATS</th>
+                    <th>Exp</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="candidateTableBody">
+                  <!-- JavaScript handles population, fallbacks are included -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right Side: Extensive Candidate Parser Analysis Detail -->
+          <div class="glass-card profile-details-card" id="profilerContainer">
+            
+            <!-- Detailed Profiler Header -->
+            <div class="profile-card-header">
+              <div class="profile-title-block">
+                <div class="big-avatar flex-center" id="profAvatar">--</div>
+                <div>
+                  <h3 style="font-size:1.25rem; font-weight:800;" id="profName">No candidate selected</h3>
+                  <span class="badge badge-info" id="profConfidenceBadge" style="margin-top:0.25rem;">Awaiting Ingestion</span>
+                  <div class="star-rating" id="profRatingStars">
+                    <!-- JS generated stars -->
+                  </div>
+                </div>
+              </div>
+              
+              <div style="text-align: right;">
+                <span class="badge" id="profStatusBadge">Awaiting Review</span>
+              </div>
+            </div>
+
+            <!-- Core predicted role info -->
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.25rem;">Predicted Job Match</div>
+              <div style="font-size:1.35rem; font-weight:800;" class="text-gradient" id="profPredictedRole">Results will appear after AI analysis</div>
+            </div>
+
+            <!-- ATS Score Gauge & Resume Strength -->
+            <div class="gauge-metrics">
+              <div class="metric-subcard">
+                <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:500; margin-bottom:0.5rem;">ATS Profile Score</div>
+                <div style="display:flex; align-items:baseline; gap:0.25rem;">
+                  <span class="metric-score" id="profAtsScore">0%</span>
+                  <span style="font-size:0.8rem; color:var(--text-secondary);">/ 100</span>
+                </div>
+              </div>
+
+              <div class="metric-subcard">
+                <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:500; margin-bottom:0.5rem;">Resume Strength</div>
+                <div class="progress-bar-container" style="margin-top:0.5rem; margin-bottom:0.25rem;">
+                  <div class="progress-bar-fill" id="profStrengthFill" style="width: 0%;"></div>
+                </div>
+                <div style="font-size: 0.75rem; color:var(--text-secondary); display:flex; justify-content:space-between;">
+                  <span>Density Rating</span>
+                  <span style="font-weight:600; color:var(--text-primary);" id="profStrengthLabel">Waiting for upload</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Executive Summary Card -->
+            <div>
+              <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">Executive Summary</h4>
+              <p style="font-size:0.875rem; line-height:1.5;" id="profSummary">
+                No candidate selected. Upload a resume to begin analysis.
+              </p>
+            </div>
+
+            <!-- Extracted Skills Matrix -->
+            <div>
+              <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">Extracted Technical Competencies</h4>
+              <div class="pill-grid" id="profExtractedSkills">
+                <!-- JS Injected Pills -->
+              </div>
+            </div>
+
+            <!-- Timeline: Work Experience & Education -->
+            <div style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:1.5rem;">
+              <div>
+                <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">Employment Timeline</h4>
+                <div class="timeline" id="profExperienceTimeline">
+                  <!-- Employment Timeline items -->
+                </div>
+              </div>
+
+              <div>
+                <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">Academic Credentials</h4>
+                <div class="timeline" id="profEducationTimeline">
+                  <!-- Academic credentials items -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Gaps: Missing & Recommended Skills -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; border-top:1px solid var(--border-color); padding-top:1.5rem;">
+              <div>
+                <h4 style="font-size:0.9rem; font-weight:700; color:var(--color-danger); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">Missing Core Skills</h4>
+                <div class="pill-grid" id="profMissingSkills">
+                  <!-- Missing skills pills -->
+                </div>
+              </div>
+
+              <div>
+                <h4 style="font-size:0.9rem; font-weight:700; color:var(--color-accent); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">Recommended Skill Additions</h4>
+                <div class="pill-grid" id="profRecommendedSkills">
+                  <!-- Recommended skills pills -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Recruiter decision buttons -->
+            <div class="profile-actions-bar">
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-danger btn-sm" id="btnReject" style="flex:1;">
+                  Reject Candidate
+                </button>
+                <button class="btn btn-success btn-sm" id="btnShortlist" style="flex:1;">
+                  Shortlist Candidate
+                </button>
+              </div>
+              
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-secondary btn-sm" id="btnDownloadReport" style="flex:1;">
+                  Download JSON Report
+                </button>
+                <a href="upload.html" class="btn btn-primary btn-sm flex-center" style="font-size:0.875rem;">
+                  Analyze Another
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CANDIDATES TAB PANEL -->
+      <div id="tab-content-candidates" class="dashboard-tab-panel" style="display: none;">
+        <div class="glass-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size:1.25rem; font-weight:800;">Candidate Registry Database</h3>
+              <p style="font-size:0.875rem; color:var(--text-secondary);">Manage and review parsed recruiter pipelines.</p>
+            </div>
+            
+            <div class="candidates-filters-bar">
+              <select id="registryFilterStatus" class="filter-select">
+                <option value="All">All Statuses</option>
+                <option value="Pending Review">Pending Review</option>
+                <option value="Shortlisted">Shortlisted</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+
+              <select id="registryFilterRole" class="filter-select">
+                <option value="All">All Predicted Roles</option>
+                <option value="DevOps">DevOps Engineers</option>
+                <option value="ML">Machine Learning</option>
+                <option value="Fullstack">Fullstack</option>
+                <option value="Designer">Product Designers</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="custom-table" id="registryCandidatesTable">
+              <thead>
+                <tr>
+                  <th>Candidate Name</th>
+                  <th>Predicted Role</th>
+                  <th>ATS Score</th>
+                  <th>Match Confidence</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="registryTableBody">
+                <!-- Javascript dynamic population -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS TAB PANEL -->
+      <div id="tab-content-analytics" class="dashboard-tab-panel" style="display: none; flex-direction: column; width:100%; gap: 2rem;">
+        
+        <!-- Empty State Placeholder -->
+        <div class="glass-card flex-center" id="analyticsPlaceholder" style="display: flex; flex-direction: column; padding: 4rem 2rem; width: 100%; text-align: center; border: 1px solid var(--border-color); border-radius: var(--radius-lg); background: rgba(30, 41, 59, 0.3);">
+          <div style="color: var(--color-accent); margin-bottom: 1.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color:var(--text-primary);">No analytics available</h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); max-width: 400px; margin: 0 auto;">Analytics will appear after resume analysis.</p>
+        </div>
+
+        <!-- Analytics Content Wrapper -->
+        <div id="analyticsContent" style="display: none; flex-direction: column; gap: 2rem; width: 100%;">
+          
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">NLP Ingestion Rate</div>
+                <div class="kpi-num" style="color:var(--color-success);">99.8%</div>
+              </div>
+              <div class="kpi-icon-box flex-center" style="background:var(--color-success-glow); color:var(--color-success);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Mean Score Density</div>
+                <div class="kpi-num" style="color:var(--color-warning);" id="analyticsAvgAts">0%</div>
+              </div>
+              <div class="kpi-icon-box flex-center" style="background:var(--color-warning-glow); color:var(--color-warning);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="18" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="2" y="13" width="4" height="8" rx="1"/></svg>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Mean Screening Time</div>
+                <div class="kpi-num" style="color:var(--color-accent);">0.0s</div>
+              </div>
+              <div class="kpi-icon-box flex-center" style="background:var(--color-accent-glow); color:var(--color-accent);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Taxonomy Size</div>
+                <div class="kpi-num">0</div>
+              </div>
+              <div class="kpi-icon-box flex-center" style="background:rgba(255,255,255,0.05); color:var(--text-primary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+            </div>
+          </section>
+
+          <div class="analytics-grid">
+            <div class="glass-card chart-panel">
+              <h3 style="font-size: 1.1rem; font-weight: 700;">ATS Match Score Distributions</h3>
+              <p style="font-size:0.85rem; color:var(--text-secondary);">Recruiter profile eligibility groupings.</p>
+              
+              <div class="bar-chart-container">
+                <div class="chart-bar-wrapper">
+                  <div class="chart-bar" id="bar-range-1" style="height: 0%;">
+                    <span class="chart-bar-tooltip" id="tooltip-range-1">0 candidates</span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">&lt; 75%</span>
+                </div>
+
+                <div class="chart-bar-wrapper">
+                  <div class="chart-bar" id="bar-range-2" style="height: 0%;">
+                    <span class="chart-bar-tooltip" id="tooltip-range-2">0 candidates</span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">75% - 80%</span>
+                </div>
+
+                <div class="chart-bar-wrapper">
+                  <div class="chart-bar" id="bar-range-3" style="height: 0%;">
+                    <span class="chart-bar-tooltip" id="tooltip-range-3">0 candidates</span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">80% - 85%</span>
+                </div>
+
+                <div class="chart-bar-wrapper">
+                  <div class="chart-bar" id="bar-range-4" style="height: 0%;">
+                    <span class="chart-bar-tooltip" id="tooltip-range-4">0 candidates</span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">85% - 90%</span>
+                </div>
+
+                <div class="chart-bar-wrapper">
+                  <div class="chart-bar" id="bar-range-5" style="height: 0%;">
+                    <span class="chart-bar-tooltip" id="tooltip-range-5">0 candidates</span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">90% - 100%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom:1rem;">Candidate Status Breakdown</h3>
+              
+              <div style="display:flex; flex-direction:column; gap:1.25rem;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
+                    <span>Shortlisted</span>
+                    <span style="color:var(--color-success); font-weight:700;" id="analyticsShortlistedPct">0%</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill" id="analyticsShortlistedFill" style="width: 0%; background:var(--color-success);"></div></div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
+                    <span>Pending Review</span>
+                    <span style="color:var(--color-accent); font-weight:700;" id="analyticsPendingPct">0%</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill" id="analyticsPendingFill" style="width: 0%; background:var(--color-accent);"></div></div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
+                    <span>Rejected</span>
+                    <span style="color:var(--color-danger); font-weight:700;" id="analyticsRejectedPct">0%</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill" id="analyticsRejectedFill" style="width: 0%; background:var(--color-danger);"></div></div>
+                </div>
+              </div>
+              
+              <div style="border-top:1px solid var(--border-color); padding-top:1rem; margin-top:1.5rem; font-size:0.75rem; text-align:center; color:var(--text-secondary);">
+                Operational Metrics synced with system cache.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SYSTEM SETTINGS TAB PANEL -->
+      <div id="tab-content-settings" class="dashboard-tab-panel" style="display: none;">
+        <div class="glass-card settings-section-card">
+          <div>
+            <h3 style="font-size:1.25rem; font-weight:800;">System Configuration</h3>
+            <p style="font-size:0.875rem; color:var(--text-secondary);">Optimize matching algorithms and parser thresholds.</p>
+          </div>
+
+          <form id="systemSettingsForm">
+            <div class="settings-row">
+              <div>
+                <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;">Minimum Auto-Shortlist Score</h4>
+                <p style="font-size:0.8rem; color:var(--text-secondary);">ATS match score threshold to mark candidates automatically as Shortlisted.</p>
+              </div>
+              <div class="slider-wrapper">
+                <input type="range" class="range-slider" id="cfgShortlistThreshold" min="50" max="95" value="85">
+                <span style="font-size:0.9rem; font-weight:700; width:30px; text-align:right;" id="cfgShortlistThresholdVal">85%</span>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;">Skills Match Weight</h4>
+                <p style="font-size:0.8rem; color:var(--text-secondary);">Priority of candidate technical competencies in final score calculation.</p>
+              </div>
+              <div class="slider-wrapper">
+                <input type="range" class="range-slider" id="cfgWeightSkills" min="10" max="80" value="50">
+                <span style="font-size:0.9rem; font-weight:700; width:30px; text-align:right;" id="cfgWeightSkillsVal">50%</span>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;">Timeline Experience Weight</h4>
+                <p style="font-size:0.8rem; color:var(--text-secondary);">Priority of candidate career longevity and role consistency.</p>
+              </div>
+              <div class="slider-wrapper">
+                <input type="range" class="range-slider" id="cfgWeightExp" min="10" max="80" value="30">
+                <span style="font-size:0.9rem; font-weight:700; width:30px; text-align:right;" id="cfgWeightExpVal">30%</span>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;">Optical Character Recognition (OCR)</h4>
+                <p style="font-size:0.8rem; color:var(--text-secondary);">Auto-OCR scanned or non-selectable text elements inside resume documents.</p>
+              </div>
+              <label class="form-check" style="margin-right: 1.5rem;">
+                <input type="checkbox" id="cfgEnableOcr" checked>
+                <span class="checkbox-custom"></span>
+                <span style="font-size:0.9rem;">Enabled</span>
+              </label>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;">Multi-page Format Diagnostics</h4>
+                <p style="font-size:0.8rem; color:var(--text-secondary);">Audit density variations on documents longer than two pages.</p>
+              </div>
+              <label class="form-check" style="margin-right: 1.5rem;">
+                <input type="checkbox" id="cfgEnableDiagnostics" checked>
+                <span class="checkbox-custom"></span>
+                <span style="font-size:0.9rem;">Enabled</span>
+              </label>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+              <button type="submit" class="btn btn-primary">Save Configuration</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
