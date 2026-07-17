@@ -165,6 +165,5 @@ if __name__ == "__main__":
     print("Education Match :", result["education_match"])
     print("ATS Score :", result["ats_score"])
 
-    print("\n========== ATS REPORT ==========\n")
 
    
