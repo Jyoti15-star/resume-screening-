@@ -1,5 +1,7 @@
 import pickle
 
+from resume_parser import extract_text
+
 # ==============================
 # Load Saved Models
 # ==============================
@@ -17,38 +19,36 @@ with open("resumescreening/models/label_encoder.pkl", "rb") as f:
     label_encoder = pickle.load(f)
 
 # ==============================
-# Input Resume Text
+# Predict Role Function
 # ==============================
 
-resume = """
-Python Developer with 3 years of experience.
-Skills: Python, Django, Flask, SQL, Machine Learning,
-Pandas, NumPy, Scikit-learn, Git, Linux.
-Developed REST APIs and machine learning models.
-"""
+def predict_role(text):
+
+    text_tfidf = tfidf.transform([text])
+
+    text_selected = selector.transform(text_tfidf)
+
+    prediction = model.predict(text_selected)
+
+    category = label_encoder.inverse_transform(prediction)
+
+    return category[0]
+
 
 # ==============================
-# TF-IDF Transformation
+# Testing
 # ==============================
 
-resume_tfidf = tfidf.transform([resume])
+if __name__ == "__main__":
 
-# ==============================
-# Feature Selection
-# ==============================
+    resume_path = input("Enter Resume PDF Path: ")
 
-resume_selected = selector.transform(resume_tfidf)
+    # PDF se text nikalo
+    resume_text = extract_text(resume_path)
 
-# ==============================
-# Prediction
-# ==============================
+    # Role predict karo
+    role = predict_role(resume_text)
 
-prediction = model.predict(resume_selected)
-
-category = label_encoder.inverse_transform(prediction)
-
-print("\n==============================")
-print("Predicted Category :", category[0])
-print("==============================")
-
-
+    print("\n==============================")
+    print("Predicted Category :", role)
+    print("==============================")

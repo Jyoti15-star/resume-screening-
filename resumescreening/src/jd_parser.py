@@ -142,16 +142,25 @@ def extract_job_title(text):
 
     lines = text.split("\n")
 
+    keywords = [
+        "job title",
+        "position",
+        "role",
+        "opening",
+        "hiring for"
+    ]
+
     for line in lines:
 
-        line = line.strip()
+        lower = line.lower()
 
-        if line.lower().startswith("job title"):
+        for key in keywords:
 
-            return line.split(":",1)[1].strip()
+            if lower.startswith(key):
+
+                return line.split(":",1)[1].strip()
 
     return "Not Found"
-
 # ----------------------------------
 # Skills
 # ----------------------------------
@@ -180,7 +189,11 @@ def extract_experience(text):
     text = text.lower()
 
     # Case 1: Direct experience mention (e.g. 2 years, 3+ years)
-    match = re.search(r'(\d+)\+?\s*(years?|year|yrs?)', text)
+    # Case 1: Direct experience mention (2 years, 3+ years, 2-4 years)
+    match = re.search(
+        r'(\d+)(?:\s*-\s*\d+)?\+?\s*(years?|year|yrs?)',
+        text
+    )
 
     if match:
         return match.group(1) + " Years"
@@ -237,7 +250,6 @@ def extract_experience(text):
 # ----------------------------------
 # Education
 # ----------------------------------
-
 def extract_education(text):
 
     text = text.lower()
@@ -247,13 +259,14 @@ def extract_education(text):
     for key, value in EDUCATION.items():
 
         if key in text:
-
             degree.append(value)
 
     degree = sorted(set(degree))
 
     if degree:
         return degree
+
+    return ["Not Mentioned"]
 
 # ----------------------------------
 # Parse JD
